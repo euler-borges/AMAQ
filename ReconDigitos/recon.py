@@ -1,8 +1,3 @@
 import digits_bitmap
+import Perceptrons
 
-
-class Perceptron:
-    def __init__(self):
-        pesos = [0] * 49
-        bias = 0
-        alpha = 1
