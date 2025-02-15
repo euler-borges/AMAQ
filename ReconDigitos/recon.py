@@ -38,13 +38,13 @@ def testar_rede():
                 entrada_array = digits_bitmap[entrada]
                 for perceptron in PERCEPTRONS:
                     saida = perceptron.testar_perceptron(entrada_array)
-                    print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida} \n \n")
+                    print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida}\n")
             elif entrada in dirty_digits:
                 entrada_array = dirty_digits[entrada]
                 for perceptron in PERCEPTRONS:
                     saida = perceptron.testar_perceptron(entrada_array)
-                    print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida} \n \n")
-                      
+                    print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida}\n")
+
             else:
                 print("Dígito inválido. Tente novamente.")
 
