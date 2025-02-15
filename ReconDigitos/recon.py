@@ -1,5 +1,6 @@
 from digits_bitmap import digits_bitmap
 from Perceptrons import Perceptron
+from dirty_digits import dirty_digits
 
 PERCEPTRONS = []
 
@@ -38,7 +39,12 @@ def testar_rede():
                 for perceptron in PERCEPTRONS:
                     saida = perceptron.testar_perceptron(entrada_array)
                     print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida} \n \n")
-                    
+            elif entrada in dirty_digits:
+                entrada_array = dirty_digits[entrada]
+                for perceptron in PERCEPTRONS:
+                    saida = perceptron.testar_perceptron(entrada_array)
+                    print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida} \n \n")
+                      
             else:
                 print("Dígito inválido. Tente novamente.")
 
