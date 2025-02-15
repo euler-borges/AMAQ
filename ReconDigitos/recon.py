@@ -1,5 +1,5 @@
 from digits_bitmap import digits_bitmap
-from Perceptrons import Perceptron as perceptron
+from Perceptrons import Perceptron
 
 PERCEPTRONS = []
 
@@ -14,16 +14,21 @@ def main():
                 perceptron.treinar_perceptron(digits_bitmap[digit])
             if perceptron.teste_de_igualdade():
                 break
+            else:
+                perceptron.atualizar_pesos_passados()
 
 
-
+    testar_rede()
 
 
 
 
 def cria_perceptrons():
     for digit in digits_bitmap:
-        PERCEPTRONS.append(perceptron(digits_bitmap[digit]))
+        PERCEPTRONS.append(Perceptron(digits_bitmap[digit]))
+
+def testar_rede():
+    pass
 
 if __name__ == "__main__":
     main()
