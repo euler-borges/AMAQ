@@ -25,10 +25,28 @@ def main():
 
 def cria_perceptrons():
     for digit in digits_bitmap:
-        PERCEPTRONS.append(Perceptron(digits_bitmap[digit]))
+        PERCEPTRONS.append(Perceptron(digits_bitmap[digit], digit))
 
 def testar_rede():
-    pass
+    try:
+
+        while True:
+            entrada = input("Digite um dígito: ")
+
+            if entrada in digits_bitmap:
+                entrada_array = digits_bitmap[entrada]
+                for perceptron in PERCEPTRONS:
+                    saida = perceptron.testar_perceptron(entrada_array)
+                    print(f"O perceptron {perceptron.string} classificou o dígito {entrada} como {saida} \n \n")
+                    
+            else:
+                print("Dígito inválido. Tente novamente.")
+
+    except KeyboardInterrupt:
+        print("Programa encerrado.")
+        exit(0)
+    except Exception as error:
+        print("Algo deu errado: ", error)
 
 if __name__ == "__main__":
     main()

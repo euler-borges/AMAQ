@@ -1,11 +1,12 @@
 class Perceptron:
-    def __init__(self, alvo):
+    def __init__(self, alvo, string):
         self.pesos_atuais = [0] * 49
         self.pesos_passados = [0] * 49
         self.bias = 0
         self.bias_passado = 0
-        self.alpha = 1
+        self.alpha = 0.5
         self.alvo = alvo
+        self.string = string
     
     #representa uma iteração do passo 2
     def treinar_perceptron(self, digito):
@@ -32,3 +33,8 @@ class Perceptron:
 
     def teste_de_igualdade(self):
         return self.pesos_atuais == self.pesos_passados and self.bias == self.bias_passado
+    
+    def testar_perceptron(self, digito):
+        saida_atual_st = self.bias + sum([digito[i] * self.pesos_atuais[i] for i in range(len(digito))])
+        saida_atual_ct = 1 if saida_atual_st >= 0 else -1
+        return saida_atual_ct
