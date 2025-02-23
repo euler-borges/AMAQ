@@ -12,7 +12,7 @@ y = df.iloc[:, -1].values
 
 
 # Criar e treinar o modelo
-adaline = Adaline(learning_rate=0.01, epochs=50, tolerance=1e-3)
+adaline = Adaline(learning_rate=0.001, epochs=1000, tolerance=1e-1)
 adaline.fit(X, y)
 
 # Plotar erro quadrático total

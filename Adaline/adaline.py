@@ -1,41 +1,41 @@
 import numpy as np
 
 class Adaline:
-    def __init__(self, learning_rate=0.01, epochs=50, tolerance=1e-3):
+    def __init__(self, learning_rate=0.001, epochs=100, tolerance=1e-3):
         self.learning_rate = learning_rate
         self.epochs = epochs
         self.weights = None
         self.bias = 0
         self.errors = []
         self.tolerance = tolerance
-        self.past_weights = None
     
     def activation(self, x):
         return np.where(x >= 0, 1, -1)
 
-    def fit(self, X, y):
+    def fit(self, X, Y):
+       
+
         n_samples, n_features = X.shape
-        self.weights = np.zeros(n_features)
-        self.past_weights = [1000] * n_features
-        self.bias = 0
+        self.weights = np.random.randn(n_features) * 0.01  # Inicializar pesos pequenos
+        self.bias = np.random.randn() * 0.01  # Inicializar bias pequeno
+        y = np.zeros(n_samples)  
         
-        while True:
-            
-            net_input = np.dot(X, self.weights) + self.bias
-            output = net_input
-            errors = y - output
-            
-            
-            self.weights += self.learning_rate * X.T.dot(errors)
-            self.bias += self.learning_rate * errors.sum()
-            
-            mse = (errors**2).mean()
-            self.errors.append(mse)
 
-            for weight, past_weight in zip(self.weights, self.past_weights):
+        for epoch in range(self.epochs):
+            for i in range(n_samples):
+                # print(X[i])
+                # print(self.weights)
+                # print(np.dot(X[i], self.weights))
+                y[i] = self.bias + np.dot(X[i], self.weights)  
+                
+                difference = Y[i] - y[i]
+                self.bias += self.learning_rate * difference
+                self.weights += self.learning_rate * difference * X[i]
 
-                if abs(weight - past_weight) < self.tolerance:
-                    return
+            self.errors.append(np.mean((Y - y) ** 2))  
+            
+            if self.errors[-1] < self.tolerance:
+                break  
 
     def predict(self, X):
         net_input = np.dot(X, self.weights) + self.bias
