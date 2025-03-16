@@ -2,43 +2,57 @@ import random
 import numpy as np
 
 class Neuronio:
-    def __init__(self, learning_rate=0.001, epochs=100, tolerance=1e-3):
+    def __init__(self):
         self.bias = 0
-        self.learning_rate = learning_rate
-        self.epochs = epochs
+        self.learning_rate = 0.02
+        self.epochs = 1000
         self.errors = []
-        self.tolerance = tolerance
+        self.tolerance = 1e-3
         self.pesos = None
-        self.termo_correcao_peso = [0,0,0,0,0]
+        self.termo_correcao_peso = [0]* 10
         self.termo_correcao_bias = 0
         self.delta = 0
-
-    def ativacao(self, entradas):
-        self.pesos = [random.random]
-        self.pesos = self.pesos * 0.3
-
-    def teste(self, entradas):
-        soma = np.dot(self.pesos, entradas) + self.bias
-        return soma
-
-class Neuronio_saida(Neuronio):
-    def __init__(self, epochs, learning_rate, tolerance):
-        super().__init__(epochs, learning_rate, tolerance)
-
-    def ativacao(self, entradas):
-        self.pesos = [random.random() for i in range(4)]
 
     # def teste(self, entradas):
     #     print(entradas)
     #     print(self.pesos)
+    #     print(self.bias)
     #     soma = np.dot(self.pesos, entradas) + self.bias
-    #     return soma
+    #     print(soma[0])
+    #     return soma[0]
+
+class Neuronio_saida(Neuronio):
+    def __init__(self, n_ocultos):
+        super().__init__()
+        self.n_ocultos = n_ocultos
+
+    def ativacao(self, entradas):
+        self.pesos = [random.random() for _ in range(self.n_ocultos)]
+        self.bias = random.random() * 0.1
+
+    def teste(self, entradas):
+        # print(entradas)
+        # print(self.pesos)
+        # print(self.bias)
+        # print(np.dot(self.pesos, entradas))
+        soma = np.dot(self.pesos, entradas) + self.bias
+        # print(soma)
+        return soma
 
 
 
 class Neuronio_oculto(Neuronio):
-    def __init__(self, epochs, learning_rate, tolerance):
-        super().__init__(epochs, learning_rate, tolerance)
+    def __init__(self):
+        super().__init__()
 
     def ativacao(self, entradas):
-        self.pesos = [random.random() for i in range(1)]
+        self.pesos = [random.random()*0.3]
+        self.bias = random.random() * 0.1
+
+    def teste(self, entradas):
+        # print(entradas)
+        # print(self.pesos)
+        # print(self.bias)
+        soma = np.dot(self.pesos, entradas) + self.bias
+        # print(soma[0])
+        return soma[0]
