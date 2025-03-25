@@ -1,6 +1,14 @@
 import random
 import numpy as np
 
+
+def sigmoide_bipolar(x):
+    return (2 / (1 + np.exp(-x))) - 1
+    
+def derivada_sigmoide_bipolar(x):
+    return 0.5 * (1 + sigmoide_bipolar(x)) * (1 - sigmoide_bipolar(x))
+
+
 #lista de listas de neuronio
 #cada entrada possui a lista dos neuronios da camada x
 class lista:
@@ -26,7 +34,7 @@ class lista:
                 self.lista.append(lista_temp)
             else:
                 for i in range(entrada):
-                    lista_temp.append(Neuronio_saida())
+                    lista_temp.append(Neuronio_saida(i))
                     lista_temp[i].ativacao(self.lista_inicializacao[j-1])
                 self.lista.append(lista_temp)
 
@@ -34,7 +42,7 @@ class lista:
 class Neuronio:
     def __init__(self):
         self.bias = 0
-        self.learning_rate = 0.02
+        self.learning_rate = 0.01
         self.epochs = 1000
         self.errors = []
         self.tolerance = 1e-3
@@ -42,14 +50,14 @@ class Neuronio:
         self.termo_correcao_peso = [0]* 10
         self.termo_correcao_bias = 0
         self.delta = 0
+        self.soma_nao_ativa = 0
+        self.soma_ativa = 0
 
-    # def teste(self, entradas):
-    #     print(entradas)
-    #     print(self.pesos)
-    #     print(self.bias)
-    #     soma = np.dot(self.pesos, entradas) + self.bias
-    #     print(soma[0])
-    #     return soma[0]
+    def calcula_soma_nao_ativada(self, entradas):
+        self.soma_nao_ativa = np.dot(self.pesos, entradas) + self.bias
+
+    def calcula_soma_ativada(self):
+        self.soma_ativa = sigmoide_bipolar(self.soma_nao_ativa)
 
 class Neuronio_entrada(Neuronio):
     def __init__(self):
@@ -59,23 +67,18 @@ class Neuronio_entrada(Neuronio):
         self.pesos = [(random.random() * 0.3) for _ in range(784)]
         self.bias = random.random() * 0.1
 
-    def teste(self, entradas):
-        soma = np.dot(self.pesos, entradas) + self.bias
-        return soma
 
 
 
 class Neuronio_saida(Neuronio):
-    def __init__(self):
+    def __init__(self, esperado):
         super().__init__()
+        self.esperado = esperado
 
     def ativacao(self, n_entradas):
         self.pesos = [(random.random() * 0.3) for _ in range(n_entradas)]
         self.bias = random.random() * 0.1
 
-    def teste(self, entradas):
-        soma = np.dot(self.pesos, entradas) + self.bias
-        return soma
 
 
 
@@ -86,7 +89,3 @@ class Neuronio_oculto(Neuronio):
     def ativacao(self, n_entradas):
         self.pesos = [(random.random() * 0.3) for _ in range(n_entradas)]
         self.bias = random.random() * 0.1
-
-    def teste(self, entradas):
-        soma = np.dot(self.pesos, entradas) + self.bias
-        return soma[0]
