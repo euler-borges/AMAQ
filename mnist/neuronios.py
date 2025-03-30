@@ -47,17 +47,28 @@ class Neuronio:
         self.errors = []
         self.tolerance = 1e-3
         self.pesos = None
-        self.termo_correcao_peso = [0]* 10
+        self.termo_correcao_peso = None
         self.termo_correcao_bias = 0
         self.delta = 0
         self.soma_nao_ativa = 0
         self.soma_ativa = 0
+
+    def fornece_resultado(self, entrada):
+        resultado_nao_ativo = np.dot(self.pesos, entrada) + self.bias
+        return sigmoide_bipolar(resultado_nao_ativo)
+        
+
 
     def calcula_soma_nao_ativada(self, entradas):
         self.soma_nao_ativa = np.dot(self.pesos, entradas) + self.bias
 
     def calcula_soma_ativada(self):
         self.soma_ativa = sigmoide_bipolar(self.soma_nao_ativa)
+
+    def atualiza_pesos(self):
+        for i in range(len(self.pesos)):
+            self.pesos[i] += self.termo_correcao_peso[i]
+        self.bias += self.termo_correcao_bias
 
 class Neuronio_entrada(Neuronio):
     def __init__(self):
@@ -67,25 +78,50 @@ class Neuronio_entrada(Neuronio):
         self.pesos = [(random.random() * 0.3) for _ in range(784)]
         self.bias = random.random() * 0.1
 
+    def calcula_delta(self, neuronios_proximos, numero_proprio):
+        self.delta_in = 0
+        for neuronio in neuronios_proximos:
+            self.delta_in += neuronio.delta * neuronio.pesos[numero_proprio]
+        self.delta = self.delta_in * derivada_sigmoide_bipolar(self.soma_nao_ativa)
 
-
+    def calcula_termo_correcao(self, camada_anterior):
+        self.termo_correcao_peso = [self.learning_rate * self.delta * camada_anterior[k] for k in range(len(self.pesos))]
+        self.termo_correcao_bias = self.learning_rate * self.delta
 
 class Neuronio_saida(Neuronio):
     def __init__(self, esperado):
         super().__init__()
         self.esperado = esperado
 
+        
+
     def ativacao(self, n_entradas):
         self.pesos = [(random.random() * 0.3) for _ in range(n_entradas)]
         self.bias = random.random() * 0.1
 
+    def calcula_delta(self, entrada):
+        t = 1 if self.esperado == entrada else -1
+        self.delta = (t - self.soma_ativa) * derivada_sigmoide_bipolar(self.soma_nao_ativa)
 
-
+    def calcula_termo_correcao(self, camada_anterior):
+        self.termo_correcao_peso = [self.learning_rate * self.delta * camada_anterior[k].soma_ativa for k in range(len(self.pesos))]
+        self.termo_correcao_bias = self.learning_rate * self.delta
 
 class Neuronio_oculto(Neuronio):
     def __init__(self):
         super().__init__()
+        self.delta_in = 0
 
     def ativacao(self, n_entradas):
         self.pesos = [(random.random() * 0.3) for _ in range(n_entradas)]
         self.bias = random.random() * 0.1
+
+    def calcula_delta(self, neuronios_proximos, numero_proprio):
+        self.delta_in = 0
+        for neuronio in neuronios_proximos:
+            self.delta_in += neuronio.delta * neuronio.pesos[numero_proprio]
+        self.delta = self.delta_in * derivada_sigmoide_bipolar(self.soma_nao_ativa)
+
+    def calcula_termo_correcao(self, camada_anterior):
+        self.termo_correcao_peso = [self.learning_rate * self.delta * camada_anterior[k].soma_ativa for k in range(len(self.pesos))]
+        self.termo_correcao_bias = self.learning_rate * self.delta
