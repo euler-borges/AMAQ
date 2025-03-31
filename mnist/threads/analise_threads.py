@@ -1,9 +1,14 @@
+import sys
+sys.path.append('..')
+
 import pandas
 import matplotlib.pyplot as plt
 import numpy as np
+import threading
 from time import time
-from tensorflow.keras.datasets import mnist
 from neuronios import Neuronio_saida as Neuronio_saida, Neuronio_oculto as Neuronio_oculto, lista as lista
+
+from tensorflow.keras.datasets import mnist
 
 N_CICLOS = 1500
 lista_inicializacao = [15, 5, 10]
@@ -18,14 +23,18 @@ x_train = x_train.reshape(-1, 28 * 28)
 x_test = x_test.reshape(-1, 28 * 28)
 
 
-
 def inicializacao(lista_inicializacao):
-
     #definindo a lista de inicialização
     lista_camadas_neuronios = lista(lista_inicializacao)
     lista_camadas_neuronios.inicializacao()
     #neuronios com pesos sendo gerados adequadamente
     return lista_camadas_neuronios.lista
+
+# Funçao thread feedfoward
+def feedforward_camada(neuronio, entrada):
+    neuronio.calcula_soma_nao_ativada(entrada)
+    neuronio.calcula_soma_ativada()
+
 
 def treino(ciclos_t, lista_camadas_neuronios):
     ciclos = 0
@@ -37,18 +46,13 @@ def treino(ciclos_t, lista_camadas_neuronios):
             for j in range(len(lista_camadas_neuronios)):
                 #j representa a camada
                 #primeira camada
+                threads_da_camada = []
                 if j == 0:
                     for neuronio in lista_camadas_neuronios[j]:
-                        neuronio.calcula_soma_nao_ativada(x_train[i])
-                        neuronio.calcula_soma_ativada()
-                #ultima camada
-                elif j == len(lista_camadas_neuronios) - 1:
-                    entradas = []
-                    for neuronio_anterior in lista_camadas_neuronios[j-1]:
-                        entradas.append(neuronio_anterior.soma_ativa)
-                    for neuronio in lista_camadas_neuronios[j]:
-                        neuronio.calcula_soma_nao_ativada(entradas)
-                        neuronio.calcula_soma_ativada()
+                        #1 thread por neuronio
+                        t = threading.Thread(target=feedforward_camada, args=(neuronio, x_train[i]))
+                        threads_da_camada.append(t)
+                        t.start()
                 #demais camadas
                 else:
                     entradas = []
@@ -57,6 +61,11 @@ def treino(ciclos_t, lista_camadas_neuronios):
                     for neuronio in lista_camadas_neuronios[j]:
                         neuronio.calcula_soma_nao_ativada(entradas)
                         neuronio.calcula_soma_ativada()
+
+                for t in threads_da_camada:
+                    t.join()
+
+            
             #retropropagação do erro
             for j in range(len(lista_camadas_neuronios)):
                 #tratando os neuronios de saida
